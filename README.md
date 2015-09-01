@@ -6,3 +6,8 @@ This app is independent from the hardware setup, meaning you can collect from di
 
 To install Node modules run : 
 `npm install` 
+
+To run do :
+`npm start`
+
+It's configured to run on locahost:4000 (and not the default 3000) for personal convenience :D
