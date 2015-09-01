@@ -27,9 +27,7 @@
                         {{post.title}}
                     </a>
                     <span ng-hide="post.link">{{post.title}}</span>
-                    <span>
-                         <a href="#/posts/{{post._id}}">Comments</a>
-                    </span>
+                    
                 </span>
         </div>
         
@@ -56,26 +54,7 @@
                 {{post.title}}
               </span>
             </h3>
-          </div>
-
-          <div ng-repeat="comment in post.comments | orderBy:'-upvotes'">
-            <span class="glyphicon glyphicon-thumbs-up"
-              ng-click="incrementUpvotesComment(comment)"></span>
-            {{comment.upvotes}} - by {{comment.author}}
-            <span style="font-size:20px; margin-left:10px;">
-              {{comment.body}}
-            </span>
-          </div>
-             
-             <form ng-submit="addComment()" style="magin-top:30px;">
-             <h3>Add a new comment</h3>
-                 <div class="form-group">
-                 <input type="text" class="form-control"
-                        plateholder="Comment"
-                        ng-model="body"></input>
-                 </div>
-             <button type="submit" class="btn btn-primary">Post</button>
-             </form>
+          </div>                                   
         </script>
     </body>
 </html>
