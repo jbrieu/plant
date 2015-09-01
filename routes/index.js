@@ -1,49 +1,41 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-var Post = mongoose.model('Post');
+var Measure = mongoose.model('Measure');
 
-router.get('/posts', function(req, res, next){
-    Post.find(function(err, posts){
+router.get('/measures', function(req, res, next){
+    Measure.find(function(err, measures){
         if(err){return next(err);}
         
-        res.json(posts);
+        res.json(measures);
     });
 });
 
-router.post('/posts', function(req, res, next){
-   var post = new Post(req.body);
+router.post('/measures', function(req, res, next){
+   var measure = new Measure(req.body); // TODO => que faut-il récupérer ?
     
-    post.save(function(err, post){
+    measure.save(function(err, measure){
        if(err) {return next(err);}
         
-        res.json(post);        
+        res.json(measure);        
     });    
 });
 
-router.param('post', function(req, res, next, id){
-    var query = Post.findById(id);
+router.param('measure', function(req, res, next, id){
+    var query = Measure.findById(id);
     
-    query.exec(function(err, post){
+    query.exec(function(err, measure){
         if(err) {return next(err);}
-        if(!post){return next(new Error('can\'t find post'));}
+        if(!measure){return next(new Error('can\'t find measure'));}
         
-        req.post = post;
+        req.measure = measure;
         return next();
     });
 });
 
-router.get('/posts/:post', function(req, res, next){
-    res.json(req.post);    
+router.get('/measures/:measure', function(req, res, next){
+    res.json(req.measure);    
 });
-
-router.put('/posts/:post/upvote', function(req, res, next){
-    req.post.upvote(function(err, post){
-        if(err){return next(err);}
-        res.json(post);
-    });
-});
-
 
 
 /* GET home page. */

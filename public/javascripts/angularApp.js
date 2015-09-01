@@ -4,97 +4,50 @@ app.config([
 '$stateProvider',
 '$urlRouterProvider',
 function($stateProvider, $urlRouterProvider) {
-
   $stateProvider
     .state('home', {
       url: '/home',
       templateUrl: '/home.html',
       controller: 'MainCtrl',
       resolve: {
-          postPromise: ['posts', function(posts){
-              return posts.getAll();
+          postPromise: ['measures', function(measures){
+              return measures.getAll();
           }]
       }
     })
-    .state('posts', {
-      url: '/posts/{id}',
-      templateUrl: '/posts.html',
-      controller: 'PostsCtrl',
-      resolve: {
-          post: ['$stateParams', 'posts', function($stateParams, posts){
-              return posts.get($stateParams.id);
-          }]
-      }
-    });
-
-  $urlRouterProvider.otherwise('home');
+    $urlRouterProvider.otherwise('home');
 }]);
 
-app.factory('posts', ['$http', function($http){
+app.factory('measures', ['$http', function($http){
     var o = {
-        posts: []
+        measures: []
     };
     
     o.getAll = function(){
-      return $http.get('/posts').success(function(data){
-         angular.copy(data, o.posts); 
+      return $http.get('/measures').success(function(data){
+        angular.copy(data, o.measures); 
       });
     };
     
-    o.create = function(post){
-        return $http.post('/posts', post).success(function(data){
-            o.posts.push(data);
+    o.create = function(measure){
+        return $http.post('/measures', measure).success(function(data){
+            o.measures.push(data);
         });
     };
-    
-    o.upvote = function(post) {
-        return $http.put('/posts/' + post._id + '/upvote').success(function(data){
-            post.upvotes += 1;
-        });
-    };
-    
+            
     o.get = function(id){
-      return $http.get('/posts/'+id).then(function(res){
+      return $http.get('/measures/'+id).then(function(res){
         return res.data;
         });        
     };
-    
-  
-    
-    
-    
-    
     
     return o;
 }])
 
 app.controller('MainCtrl', [
     '$scope',
-    'posts',
-    function($scope, posts){    
-        $scope.posts = posts.posts;
-        $scope.addPost = function(){
-            if(!$scope.title || $scope.title === ''){return;}
-            posts.create({
-               title: $scope.title,
-                link: $scope.link,
-            });
-            
-            $scope.title = '';
-            $scope.link = '';
-        };
-        
-        $scope.incrementUpvotes = function(post) {
-            posts.upvote(post);
-        };
+    'measures',
+    function($scope, measures){    
+        $scope.measures = measures.measures;                
     }
-]);
-
-app.controller('PostsCtrl', [
-    '$scope',
-    'posts',
-    'post',
-    function($scope, posts, post){
-        $scope.post = post;               
-    }        
 ]);
