@@ -17,7 +17,7 @@ router.post('/measures', function(req, res, next){
     measure.save(function(err, measure){
        if(err) {return next(err);}
         
-        res.json(measure);        
+        res.json(measure);
     });    
 });
 
