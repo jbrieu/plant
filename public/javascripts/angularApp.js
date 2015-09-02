@@ -1,4 +1,4 @@
-var app = angular.module('plant', ['ui.router', 'ui.bootstrap'])
+var app = angular.module('plant', ['ui.router', 'ui.bootstrap', 'chart.js'])
 
 app.config([
 '$stateProvider',
