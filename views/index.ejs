@@ -23,17 +23,56 @@
     <script type="text/ng-template" id="/home.html">
         <div class="row">
             <table class="table table-striped table-condensed table-hover">
-                <tr ng-repeat="m in measures | orderBy : 'Date'">
-                    <td popover="{{m.comment}}" popover-trigger="mouseenter" popover-append-to-body="true" popover-placement="right">{{ m.source }}</td>
-                    <td>{{ m.date }}</td>
-                    <td>{{ m.value }}</td>
-                    <td>{{ m.type }}</td>
+                <tr>
+                    <th>Plant</th>
+                    <th>Sensor</th>
+                    <th>Type</th>
+                </tr>
+                <tr ng-repeat="s in sensors | orderBy : 'plantName'">
+                    <td>{{ s.plantName }}</td>
+                    <td popover="{{s.description}}" popover-trigger="mouseenter" popover-append-to-body="true" popover-placement="right"> <a href="#/sensors/{{s._id}}">{{ s.sensorName }}</a></td>
+                    <td>{{ s.valueType }}</td>
                 </tr>
             </table>
         </div>
 
-        <div class="row">
+        <form ng-submit="addSensor()" style="margin-top:30px;">
+            <h3>Add a new sensor</h3>
+            <div class="form-group">
+                <input type="text" ng-model="plantName" class="form-control" placeholder="Plant Name" required="true"></input>
+            </div>
+            <div class="form-group">
+                <input type="text" placeholder="Sensor Name" class="form-control" ng-model="sensorName" required="true"></input>
+                <input type="text" placeholder="MOISTURE" class="form-control" ng-model="valueType" required="true"></input>
+                <input type="number" placeholder="Min Value" class="form-control" ng-model="minValue" required="true"></input>
+                <input type="number" placeholder="Max Value" class="form-control" ng-model="maxValue" required="true"></input>
+                <input type="text" placeholder="Description" class="form-control" ng-model="description" required="true"></input>
+            </div>
 
+            <button type="submit" class="btn btn-primary">Post</button>
+        </form>
+    </script>
+
+
+    <script type="text/ng-template" id="/sensors.html">
+        <div class="row">
+            <div class="page-header">
+                <h3>
+                {{sensor.plantName}} - {{sensor.sensorName}} - {{sensor.valueType}}                          
+            </h3>
+            </div>
+            <table class="table table-striped table-condensed table-hover">
+                <tr>
+                    <th>Date</th>
+                    <th>Value [{{sensor.minValue}}-{{sensor.maxValue}}]</th>
+                </tr>
+                <tr ng-repeat="m in sensor.measures | orderBy:'date'">
+                    <td>{{m.date | date:"dd/MM 'at' HH:mm"}}</td>
+                    <td>{{ m.value }}</td>
+                </tr>
+            </table>
+        </div>
+        <div class="row">
             <canvas id="line" class="chart chart-line" chart-data="data" chart-labels="labels" chart-legend="true" chart-series="series" chart-click="onClick">
             </canvas>
         </div>

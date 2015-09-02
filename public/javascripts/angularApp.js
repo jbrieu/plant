@@ -4,39 +4,51 @@ app.config([
 '$stateProvider',
 '$urlRouterProvider',
 function ($stateProvider, $urlRouterProvider) {
+
         $stateProvider
             .state('home', {
                 url: '/home',
                 templateUrl: '/home.html',
                 controller: 'MainCtrl',
                 resolve: {
-                    postPromise: ['measures', function (measures) {
-                        return measures.getAll();
+                    postPromise: ['sensors', function (sensors) {
+                        return sensors.getAll();
           }]
                 }
             })
+            .state('sensors', {
+                url: '/sensors/{id}',
+                templateUrl: '/sensors.html',
+                controller: 'SensorsCtrl',
+                resolve: {
+                    sensor: ['$stateParams', 'sensors', function ($stateParams, sensors) {
+                        return sensors.get($stateParams.id);
+          }]
+                }
+            });
+
         $urlRouterProvider.otherwise('home');
 }]);
 
-app.factory('measures', ['$http', function ($http) {
+app.factory('sensors', ['$http', function ($http) {
     var o = {
-        measures: []
+        sensors: []
     };
 
     o.getAll = function () {
-        return $http.get('/measures').success(function (data) {
-            angular.copy(data, o.measures);
+        return $http.get('/sensors').success(function (data) {
+            angular.copy(data, o.sensors);
         });
     };
 
-    o.create = function (measure) {
-        return $http.post('/measures', measure).success(function (data) {
-            o.measures.push(data);
+    o.create = function (sensor) {
+        return $http.post('/sensors', sensor).success(function (data) {
+            o.sensors.push(data);
         });
     };
 
     o.get = function (id) {
-        return $http.get('/measures/' + id).then(function (res) {
+        return $http.get('/sensors/' + id).then(function (res) {
             return res.data;
         });
     };
@@ -44,32 +56,61 @@ app.factory('measures', ['$http', function ($http) {
     return o;
 }])
 
-String.prototype.padLeft = function (length, character) { 
-    return new Array(length - this.length + 1).join(character || ' ') + this; 
+String.prototype.padLeft = function (length, character) {
+    return new Array(length - this.length + 1).join(character || ' ') + this;
 };
 
 Date.prototype.toFormattedString = function () {
-    return [String(this.getMonth()+1).padLeft(2, '0'),
+    return [String(this.getMonth() + 1).padLeft(2, '0'),
             String(this.getDate()).padLeft(2, '0'),
-            String(this.getFullYear()).substr(2, 2)].join("/") + " " +
-           [String(this.getHours()).padLeft(2, '0'),
+            String(this.getFullYear()).substr(2, 2)].join("/") + " " + [String(this.getHours()).padLeft(2, '0'),
             String(this.getMinutes()).padLeft(2, '0')].join(":");
 };
 
 app.controller('MainCtrl', [
     '$scope',
-    'measures',
-    function ($scope, measures) {
-        $scope.measures = measures.measures;
+    'sensors',
+    function ($scope, sensors) {
+        $scope.sensors = sensors.sensors;
 
-        $scope.labels = measures.measures.map(function(measure){
-                                                        return new Date(measure.date).toFormattedString();
-                                                        });
-        $scope.series = ['Series A'];
-        $scope.data = [measures.measures.map(function(measure){return measure.value})];
+        $scope.addSensor = function () {
+            if (!$scope.plantName || $scope.plantName === '' || !$scope.sensorName || $scope.sensorName === '' || !$scope.valueType || $scope.valueType === '') {
+                return;
+            }
+            sensors.create({
+                plantName: $scope.plantName,
+                sensorName: $scope.sensorName,
+                valueType: $scope.valueType,
+                minValue: $scope.minValue,
+                maxValue: $scope.maxValue,
+                description: $scope.description
+            });
+
+            $scope.plantName = '';
+            $scope.sensorName = '';
+            $scope.valueType = '';
+            $scope.minValue = 0;
+            $scope.maxValue = 1024;
+            $scope.description = '';
+        };
+    }
+]);
+
+app.controller('SensorsCtrl', [
+    '$scope',
+    'sensor',
+    function ($scope, sensor) {
+        $scope.sensor = sensor;
+
+        $scope.labels = sensor.measures.map(function (measure) {
+            return new Date(measure.date).toFormattedString();
+        });
+        $scope.series = [sensor.sensorName];
+        $scope.data = [sensor.measures.map(function (measure) {
+            return measure.value
+        })];
         $scope.onClick = function (points, evt) {
             console.log(points, evt);
         };
     }
 ]);
-
