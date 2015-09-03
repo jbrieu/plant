@@ -72,7 +72,7 @@
                     <td>{{m.date | date:"dd/MM 'at' HH:mm"}}</td>
                     <td>{{ m.value }}</td>
                     <td> <form ng-submit="setCommentOnMeasure(m, comment)">
-                <input type="text" placeholder="{{m.comment}}" class="form-control" ng-model="comment" required="false"></input>            
+                <input type="text" class="form-control" ng-model="comment" required="false" ng-value="m.comment"></input>
             <button type="submit" class="btn btn-primary">Post</button></form></td>
                 </tr>
             </table>
