@@ -71,8 +71,8 @@
                 <tr ng-repeat="m in sensor.measures | orderBy:'date'">
                     <td>{{m.date | date:"dd/MM 'at' HH:mm"}}</td>
                     <td>{{ m.value }}</td>
-                    <td> <form ng-submit="setCommentOnMeasure(m, comment)">
-                <input type="text" class="form-control" ng-model="comment" required="false" ng-value="m.comment"></input>
+                    <td> <form class="form-inline" ng-submit="setCommentOnMeasure(m, comment)">
+                <input type="text" class="form-control" ng-model="comment" required="false" ng-value="m.comment" size="35"></input>
             <button type="submit" class="btn btn-primary">Post</button></form></td>
                 </tr>
             </table>
