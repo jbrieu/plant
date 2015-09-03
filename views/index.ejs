@@ -8,6 +8,7 @@
     <script src="/bower_components/angular/angular.min.js"></script>
     <script src="/bower_components/Chart.js/Chart.min.js"></script>
     <script src="/bower_components/angular-chart.js/dist/angular-chart.js"></script>
+    <script src="/bower_components/angular-chart.js/dist/angular-chart.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.10/angular-ui-router.js"></script>
     <script src="/bower_components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
 
@@ -70,7 +71,9 @@
                 <tr ng-repeat="m in sensor.measures | orderBy:'date'">
                     <td>{{m.date | date:"dd/MM 'at' HH:mm"}}</td>
                     <td>{{ m.value }}</td>
-                    <td>{{ m.comment }}</td>
+                    <td> <form ng-submit="setCommentOnMeasure(m, comment)">
+                <input type="text" placeholder="{{m.comment}}" class="form-control" ng-model="comment" required="false"></input>            
+            <button type="submit" class="btn btn-primary">Post</button></form></td>
                 </tr>
             </table>
         </div>

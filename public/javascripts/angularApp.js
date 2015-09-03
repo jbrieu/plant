@@ -52,6 +52,13 @@ app.factory('sensors', ['$http', function ($http) {
             return res.data;
         });
     };
+    
+    o.commentMeasure = function (sensor, measure, comment) {
+        return $http.put('/sensors/' + sensor._id + '/measures/' + measure._id, {'comment' : comment})
+            .success(function (data) {
+                measure.comment = comment;
+            });
+    };
 
     return o;
 }])
@@ -98,10 +105,15 @@ app.controller('MainCtrl', [
 
 app.controller('SensorsCtrl', [
     '$scope',
+    'sensors',
     'sensor',
-    function ($scope, sensor) {
+    function ($scope, sensors, sensor) {
         $scope.sensor = sensor;
 
+        $scope.setCommentOnMeasure = function(measure, comment){
+          sensors.commentMeasure(sensor, measure, comment);  
+        };
+        
         $scope.labels = sensor.measures.map(function (measure) {
             return new Date(measure.date).toFormattedString();
         });
