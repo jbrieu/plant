@@ -65,10 +65,12 @@
                 <tr>
                     <th>Date</th>
                     <th>Value [{{sensor.minValue}}-{{sensor.maxValue}}]</th>
+                    <th>Comment</th>
                 </tr>
                 <tr ng-repeat="m in sensor.measures | orderBy:'date'">
                     <td>{{m.date | date:"dd/MM 'at' HH:mm"}}</td>
                     <td>{{ m.value }}</td>
+                    <td>{{ m.comment }}</td>
                 </tr>
             </table>
         </div>

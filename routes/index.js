@@ -69,7 +69,14 @@ router.post('/sensors/:sensor/measures', function(req, res, next){
     });
 });
 
-
+router.put('/sensors/:sensor/measures/:measure', function(req, res, next){
+    req.measure.comment = req.body.comment;
+    
+    req.measure.save(function(err, measure){
+        if(err){return next(err);}        
+        res.json(measure);
+    });
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
