@@ -3,6 +3,25 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var Sensor = mongoose.model('Sensor');
 var Measure = mongoose.model('Measure');
+var Plant = mongoose.model('Plant');
+
+router.get('/plants', function(req, res, next){
+    Plant.find(function(err, plants){
+        if(err){return next(err);}
+        
+        res.json(plants);
+    });
+});
+
+router.post('/plants', function(req, res, next){
+   var plant = new Plant(req.body);
+    
+    plant.save(function(err, plant){
+       if(err) {return next(err);}
+        
+        res.json(plant);
+    });    
+});
 
 router.get('/sensors', function(req, res, next){
     Sensor.find(function(err, sensors){

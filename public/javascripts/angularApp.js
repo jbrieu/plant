@@ -11,8 +11,11 @@ function ($stateProvider, $urlRouterProvider) {
                 templateUrl: '/home.html',
                 controller: 'MainCtrl',
                 resolve: {
-                    postPromise: ['sensors', function (sensors) {
-                        return sensors.getAll();
+                    sensorsPromise: ['sensorsService', function (sensorsService) {
+                        return sensorsService.getAll();
+          }],
+                    plantsPromise: ['plantsService', function (plantsService) {
+                        return plantsService.getAll();
           }]
                 }
             })
@@ -21,8 +24,8 @@ function ($stateProvider, $urlRouterProvider) {
                 templateUrl: '/sensors.html',
                 controller: 'SensorsCtrl',
                 resolve: {
-                    sensor: ['$stateParams', 'sensors', function ($stateParams, sensors) {
-                        return sensors.get($stateParams.id);
+                    sensor: ['$stateParams', 'sensorsService', function ($stateParams, sensorsService) {
+                        return sensorsService.get($stateParams.id);
           }]
                 }
             });
@@ -30,7 +33,7 @@ function ($stateProvider, $urlRouterProvider) {
         $urlRouterProvider.otherwise('home');
 }]);
 
-app.factory('sensors', ['$http', function ($http) {
+app.factory('sensorsService', ['$http', function ($http) {
     var o = {
         sensors: []
     };
@@ -52,12 +55,34 @@ app.factory('sensors', ['$http', function ($http) {
             return res.data;
         });
     };
-    
+
     o.commentMeasure = function (sensor, measure, comment) {
-        return $http.put('/sensors/' + sensor._id + '/measures/' + measure._id, {'comment' : comment})
+        return $http.put('/sensors/' + sensor._id + '/measures/' + measure._id, {
+                'comment': comment
+            })
             .success(function (data) {
                 measure.comment = comment;
             });
+    };
+
+    return o;
+}])
+
+app.factory('plantsService', ['$http', function ($http) {
+    var o = {
+        plants: []
+    };
+
+    o.getAll = function () {
+        return $http.get('/plants').success(function (data) {
+            angular.copy(data, o.plants);
+        });
+    };
+
+    o.create = function (plant) {
+        return $http.post('/plants', plant).success(function (data) {
+            o.plants.push(data);
+        });
     };
 
     return o;
@@ -76,16 +101,18 @@ Date.prototype.toFormattedString = function () {
 
 app.controller('MainCtrl', [
     '$scope',
-    'sensors',
-    function ($scope, sensors) {
-        $scope.sensors = sensors.sensors;
+    'sensorsService',
+    'plantsService',
+    function ($scope, sensorsService, plantsService) {
+        $scope.sensors = sensorsService.sensors;
+        $scope.plants = plantsService.plants;
 
         $scope.addSensor = function () {
-            if (!$scope.plantName || $scope.plantName === '' || !$scope.sensorName || $scope.sensorName === '' || !$scope.valueType || $scope.valueType === '') {
+            if (!$scope.sensorName || $scope.sensorName === '' || !$scope.valueType || $scope.valueType === '') {
                 return;
             }
-            sensors.create({
-                plantName: $scope.plantName,
+
+            sensorsService.create({
                 sensorName: $scope.sensorName,
                 valueType: $scope.valueType,
                 minValue: $scope.minValue,
@@ -93,27 +120,42 @@ app.controller('MainCtrl', [
                 description: $scope.description
             });
 
-            $scope.plantName = '';
             $scope.sensorName = '';
             $scope.valueType = '';
             $scope.minValue = 0;
-            $scope.maxValue = 1024;
+            $scope.maxValue = 1023;
             $scope.description = '';
         };
+
+        $scope.addPlant = function () {
+            if (!$scope.plantCreateName || $scope.plantCreateName === '') {
+                return;
+            }
+
+            plantsService.create({
+                name: $scope.plantCreateName,
+                description: $scope.plantCreateDescription
+            });
+
+            $scope.plantCreateName = '';
+            $scope.plantCreateDescription = '';
+        };
+
+        $scope.currentPlant = plantsService.plants[0];
     }
 ]);
 
 app.controller('SensorsCtrl', [
     '$scope',
-    'sensors',
+    'sensorsService',
     'sensor',
-    function ($scope, sensors, sensor) {
+    function ($scope, sensorsService, sensor) {
         $scope.sensor = sensor;
 
-        $scope.setCommentOnMeasure = function(measure, comment){
-          sensors.commentMeasure(sensor, measure, comment);  
+        $scope.setCommentOnMeasure = function (measure, comment) {
+            sensorsService.commentMeasure(sensor, measure, comment);
         };
-        
+
         $scope.labels = sensor.measures.map(function (measure) {
             return new Date(measure.date).toFormattedString();
         });
