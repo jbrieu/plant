@@ -205,7 +205,8 @@ app.controller('MainCtrl', [
 
             var allLabels = $scope.currentSensors.map(function (sensor) {
                 return sensor.measures.map(function (measure) {
-                    return new Date(measure.date).toFormattedString();
+                    //return new Date(measure.date).toFormattedString();
+                    return "date";
                 })
             });
             
