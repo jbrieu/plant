@@ -203,12 +203,13 @@ app.controller('MainCtrl', [
                 return sensor.sensorName;
             });
 
-            $scope.labels = $scope.currentSensors.map(function (sensor) {
-                return "Date";
-//                return sensor.measures.map(function (measure) {
-//                    return new Date(measure.date).toFormattedString();
-//                })
+            var allLabels = $scope.currentSensors.map(function (sensor) {
+                return sensor.measures.map(function (measure) {
+                    return new Date(measure.date).toFormattedString();
+                })
             });
+            
+            $scope.labels = arrayUnique(allLabels);
 
             $scope.data = $scope.currentSensors.map(function (sensor) {
                 return sensor.measures.map(function (measure) {
@@ -223,6 +224,18 @@ app.controller('MainCtrl', [
         };
     }
 ]);
+
+function arrayUnique(array) {
+    var a = array.concat();
+    for(var i=0; i<a.length; ++i) {
+        for(var j=i+1; j<a.length; ++j) {
+            if(a[i] === a[j])
+                a.splice(j--, 1);
+        }
+    }
+
+    return a;
+};
 
 app.controller('SensorsCtrl', [
     '$scope',
