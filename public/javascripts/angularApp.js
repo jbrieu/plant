@@ -85,6 +85,43 @@ app.factory('plantsService', ['$http', function ($http) {
         });
     };
 
+    o.linkWithSensor = function (plant, sensor)  {
+        // Look for Ids and not Objects because get does not populate sensors in plant
+        console.log("plant to link :" + plant + " with sensor " + sensor);
+        if (plant.sensors.indexOf(sensor._id) === -1) {
+            var newArrayIds = plant.sensors;
+            newArrayIds.push(sensor._id);
+
+            console.log("sensor not already linked with plant, continue");
+
+            $http.put('/plants/' + plant._id, {
+                    'sensors': newArrayIds
+                })
+                .success(function (data) {
+                    plant.sensors = newArrayIds;
+                    var found = false;
+                    for (var i = 0; i < sensor.plants.length; i++) {
+                        if (sensor.plants[i]._id == plant._id) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    if (!found) {
+                        var newArrayIds2 = sensor.plants;
+                        newArrayIds2.push(plant._id);
+                        return $http.put('/sensors/' + sensor._id, {
+                                'plants': newArrayIds2
+                            })
+                            .success(function (data) {
+                                sensor.plants = newArrayIds2;
+                            });
+                    }
+
+                });
+        }
+    };
+
     return o;
 }])
 
@@ -141,14 +178,24 @@ app.controller('MainCtrl', [
             $scope.plantCreateDescription = '';
         };
 
-        $scope.currentPlant = plantsService.plants[3];    
-        
+        $scope.linkWithSensor = function () {
+            if (!$scope.plantToLink || !$scope.sensorToLink) {
+                console.log("null ? plant = " + $scope.plantToLink + " sensor = " + $scope.sensorToLink);
+                return;
+            }
+
+            plantsService.linkWithSensor($scope.plantToLink, $scope.sensorToLink);
+        };
+
+
+        $scope.currentPlant = plantsService.plants[3];
+
         $scope.$watch("currentPlant", function (newValue, oldValue) {
             if ($scope.currentPlant) {
                 $scope.currentSensors = $scope.sensors.filter(function (sensor) {
                     return $scope.currentPlant.sensors.indexOf(sensor._id) !== -1;
                 });
-            }else{
+            } else {
                 $scope.currentSensors = $scope.sensors;
             }
         });
