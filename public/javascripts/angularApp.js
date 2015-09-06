@@ -199,24 +199,31 @@ app.controller('MainCtrl', [
             } else {
                 $scope.currentSensors = $scope.sensors;
             }
+            
             $scope.series = $scope.currentSensors.map(function (sensor) {
                 return sensor.sensorName;
             });
 
-            var allLabels = $scope.currentSensors.map(function (sensor) {
-                return sensor.measures.map(function (measure) {
-                    //return new Date(measure.date).toFormattedString();
-                    return "date";
-                })
-            });
+            var allLabels = new Array();
             
-            $scope.labels = arrayUnique(allLabels);
+            for(var sensorIndex in $scope.currentSensors){
+                var labelsForThisSensor = new Array();
+                for(var measureIndex in $scope.currentSensors[sensorIndex].measures){
+                    labelsForThisSensor.push(new Date($scope.currentSensors[sensorIndex].measures[measureIndex].date).toFormattedString());
+                }
+                allLabels.push(labelsForThisSensor)
+            }
+            
+            var merged  = [];
+            merged.concat.apply(merged, allLabels);
+            $scope.labels = merged;
 
             $scope.data = $scope.currentSensors.map(function (sensor) {
                 return sensor.measures.map(function (measure) {
                     return measure.value;
                 })
             });
+            
 
         });
 
