@@ -41,13 +41,14 @@
                 <tr>
                     <th>Sensor</th>
                     <th>Type</th>                    
+                    <th>Plants Covered</th>
                 </tr>
                 <tr ng-repeat="s in currentSensors | orderBy : 'name'">
                     <td popover="{{s.description}}" popover-trigger="mouseenter" popover-append-to-body="true" popover-placement="right"> <a href="#/sensors/{{s._id}}">{{ s.sensorName }}</a></td>
                     <td>{{ s.valueType }}</td>
                     <td>
                         <ul>
-                            <li ng-repeat="p in s.plants">{{p}}</li>                            
+                            <li ng-repeat="p in s.plants">{{p.name}}</li>
                         </ul>
                     </td>
                 </tr>
