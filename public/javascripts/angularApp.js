@@ -141,7 +141,17 @@ app.controller('MainCtrl', [
             $scope.plantCreateDescription = '';
         };
 
-        $scope.currentPlant = plantsService.plants[0];
+        $scope.currentPlant = plantsService.plants[3];    
+        
+        $scope.$watch("currentPlant", function (newValue, oldValue) {
+            if ($scope.currentPlant) {
+                $scope.currentSensors = $scope.sensors.filter(function (sensor) {
+                    return $scope.currentPlant.sensors.indexOf(sensor._id) !== -1;
+                });
+            }else{
+                $scope.currentSensors = $scope.sensors;
+            }
+        });
     }
 ]);
 

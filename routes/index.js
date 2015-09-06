@@ -5,12 +5,32 @@ var Sensor = mongoose.model('Sensor');
 var Measure = mongoose.model('Measure');
 var Plant = mongoose.model('Plant');
 
+router.param('plant', function(req, res, next, id){
+    var query = Plant.findById(id);
+    
+    query.exec(function(err, plant){
+        if(err) {return next(err);}
+        if(!plant){return next(new Error('can\'t find plant'));}
+        
+        req.plant = plant;
+        return next();
+    });
+});
+
 router.get('/plants', function(req, res, next){
     Plant.find(function(err, plants){
         if(err){return next(err);}
         
         res.json(plants);
     });
+});
+
+router.get('/plants/:plant', function(req, res, next){
+    req.plant.populate('sensors', function(err, plant){
+        if(err){return next(err);}
+        
+        return res.json(req.plant);
+    });    
 });
 
 router.post('/plants', function(req, res, next){
@@ -21,6 +41,20 @@ router.post('/plants', function(req, res, next){
         
         res.json(plant);
     });    
+});
+
+
+router.put('/plants/:plant', function(req, res, next){
+    var objectIDs = req.body.sensors.map(function(sensorId){       
+       return mongoose.Types.ObjectId(sensorId);       
+   });
+    
+    req.plant.sensors = objectIDs;
+    
+    req.plant.save(function(err, plant){
+        if(err){return next(err);}        
+        res.json(plant);
+    });
 });
 
 router.get('/sensors', function(req, res, next){
@@ -40,6 +74,7 @@ router.post('/sensors', function(req, res, next){
         res.json(sensor);
     });    
 });
+
 
 router.param('sensor', function(req, res, next, id){
     var query = Sensor.findById(id);
@@ -66,7 +101,9 @@ router.param('measure', function(req, res, next, id){
 });
 
 router.get('/sensors/:sensor', function(req, res, next){
-    req.sensor.populate('measures', function(err, sensor){
+    var populateQuery = [{path:'plants', select:'name'}, {path:'measures'}];
+    
+    Sensor.populate(req.sensor, populateQuery, function(err, sensor){
         if(err){return next(err);}
         
         return res.json(req.sensor);
@@ -85,6 +122,19 @@ router.post('/sensors/:sensor/measures', function(req, res, next){
             if(err){return next(err);}
             res.json(measure);
         });
+    });
+});
+
+router.put('/sensors/:sensor', function(req, res, next){
+    var objectIDs = req.body.plants.map(function(plantId){       
+       return mongoose.Types.ObjectId(plantId);       
+   });
+    
+    req.sensor.plants = objectIDs;
+    
+    req.sensor.save(function(err, sensor){
+        if(err){return next(err);}        
+        res.json(sensor);
     });
 });
 
