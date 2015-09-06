@@ -75,7 +75,7 @@ router.get('/sensors', function (req, res, next) {
             return next(err);
         }
         
-        var opts = [{path: 'plants', select: 'name'}];
+        var opts = [{path: 'plants', select: 'name'}, {path:'measures'}];
         Sensor.populate(sensors, opts, function (err, user) {
             res.json(sensors);
         });

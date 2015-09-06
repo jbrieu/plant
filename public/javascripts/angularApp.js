@@ -188,7 +188,8 @@ app.controller('MainCtrl', [
         };
 
 
-        $scope.currentPlant = plantsService.plants[3];
+        $scope.currentPlant = plantsService.plants[0];
+        $scope.currentSensors = $scope.sensors;
 
         $scope.$watch("currentPlant", function (newValue, oldValue) {
             if ($scope.currentPlant) {
@@ -198,7 +199,27 @@ app.controller('MainCtrl', [
             } else {
                 $scope.currentSensors = $scope.sensors;
             }
+            $scope.series = $scope.currentSensors.map(function (sensor) {
+                return sensor.sensorName;
+            });
+
+            $scope.labels = $scope.currentSensors.map(function (sensor) {
+                return sensor.measures.map(function (measure) {
+                    return new Date(measure.date).toFormattedString();
+                })
+            });
+
+            $scope.data = $scope.currentSensors.map(function (sensor) {
+                return sensor.measures.map(function (measure) {
+                    return measure.value;
+                })
+            });
+
         });
+
+        $scope.onClick = function (points, evt) {
+            console.log(points, evt);
+        };
     }
 ]);
 

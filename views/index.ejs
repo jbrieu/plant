@@ -54,6 +54,11 @@
                 </tr>
             </table>
         </div>
+        
+        <div class="row">
+            <canvas id="line" class="chart chart-line" chart-data="data" chart-labels="labels" chart-legend="true" chart-series="series" chart-click="onClick">
+            </canvas>
+        </div>
 
 
 
@@ -84,7 +89,7 @@
             <h3>Link Plant With Sensor</h3>
             <div class="form-group">
                 <select ng-model="plantToLink" name="plantToLink" ng-options="p as p.name for p in plants"></select>
-                <select ng-model="sensorToLink" name="sensorToLink" ng-options="s as s.name for s in sensors"></select>
+                <select ng-model="sensorToLink" name="sensorToLink" ng-options="s as s.sensorName for s in sensors"></select>
             </div>
 
             <button type="submit" class="btn btn-primary">Post</button>
