@@ -209,14 +209,20 @@ app.controller('MainCtrl', [
             for(var sensorIndex in $scope.currentSensors){
                 var labelsForThisSensor = new Array();
                 for(var measureIndex in $scope.currentSensors[sensorIndex].measures){
-                    labelsForThisSensor.push(new Date($scope.currentSensors[sensorIndex].measures[measureIndex].date).toFormattedString());
+                    labelsForThisSensor.push(new Date($scope.currentSensors[sensorIndex].measures[measureIndex].date).toFormattedString());                    
                 }
                 allLabels.push(labelsForThisSensor)
             }
             
-            var merged  = [];
-            merged.concat.apply(merged, allLabels);
-            $scope.labels = merged;
+            console.log(allLabels);
+            
+        
+                                
+            var merged = [].concat.apply([], allLabels);
+            console.log(arrayUnique(merged));
+            
+            
+            $scope.labels = arrayUnique(merged);
 
             $scope.data = $scope.currentSensors.map(function (sensor) {
                 return sensor.measures.map(function (measure) {
