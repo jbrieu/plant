@@ -212,16 +212,10 @@ app.controller('MainCtrl', [
                     labelsForThisSensor.push(new Date($scope.currentSensors[sensorIndex].measures[measureIndex].date).toFormattedString());                    
                 }
                 allLabels.push(labelsForThisSensor)
-            }
-            
-            console.log(allLabels);
-            
-        
+            }                                
                                 
             var merged = [].concat.apply([], allLabels);
-            console.log(arrayUnique(merged));
-            
-            
+                        
             $scope.labels = arrayUnique(merged);
 
             $scope.data = $scope.currentSensors.map(function (sensor) {
