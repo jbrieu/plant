@@ -1,9 +1,16 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
+var passport = require('passport');
+var jwt = require('express-jwt');
+
+var auth = jwt({secret: process.env.PLANT_SECRET_KEY, userProperty: 'payload'});
+
 var Sensor = mongoose.model('Sensor');
 var Measure = mongoose.model('Measure');
 var Plant = mongoose.model('Plant');
+var User = mongoose.model('User');
+
 
 router.param('plant', function (req, res, next, id) {
     var query = Plant.findById(id);
@@ -41,8 +48,9 @@ router.get('/plants/:plant', function (req, res, next) {
     });
 });
 
-router.post('/plants', function (req, res, next) {
+router.post('/plants', auth, function (req, res, next) {
     var plant = new Plant(req.body);
+    plant.addedBy = req.payload.username;
 
     plant.save(function (err, plant) {
         if (err) {
@@ -54,7 +62,7 @@ router.post('/plants', function (req, res, next) {
 });
 
 
-router.put('/plants/:plant', function (req, res, next) {
+router.put('/plants/:plant', auth, function (req, res, next) {
     var objectIDs = req.body.sensors.map(function (sensorId) {
         return mongoose.Types.ObjectId(sensorId);
     });
@@ -83,8 +91,9 @@ router.get('/sensors', function (req, res, next) {
     });
 });
 
-router.post('/sensors', function (req, res, next) {
+router.post('/sensors', auth, function (req, res, next) {
     var sensor = new Sensor(req.body);
+    sensor.addedBy = req.payload.username;
 
     sensor.save(function (err, sensor) {
         if (err) {
@@ -145,9 +154,10 @@ router.get('/sensors/:sensor', function (req, res, next) {
     });
 });
 
-router.post('/sensors/:sensor/measures', function (req, res, next) {
+router.post('/sensors/:sensor/measures', auth, function (req, res, next) {
     var measure = new Measure(req.body);
     measure.sensor = req.sensor;
+    measure.addedBy = req.payload.username;
 
     measure.save(function (err, measure) {
         if (err) {
@@ -164,8 +174,8 @@ router.post('/sensors/:sensor/measures', function (req, res, next) {
     });
 });
 
-router.put('/sensors/:sensor', function (req, res, next) {
-    var objectIDs = req.body.plants.map(function (plantId) {
+router.put('/sensors/:sensor', auth, function (req, res, next) {
+    var objectIDs = req.body.plants.map(function(plantId) {
         return mongoose.Types.ObjectId(plantId);
     });
 
@@ -179,7 +189,7 @@ router.put('/sensors/:sensor', function (req, res, next) {
     });
 });
 
-router.put('/sensors/:sensor/measures/:measure', function (req, res, next) {
+router.put('/sensors/:sensor/measures/:measure', auth, function (req, res, next) {
     req.measure.comment = req.body.comment;
 
     req.measure.save(function (err, measure) {
@@ -188,6 +198,40 @@ router.put('/sensors/:sensor/measures/:measure', function (req, res, next) {
         }
         res.json(measure);
     });
+});
+
+router.post('/register', function(req, res, next){
+   if(!req.body.username || ! req.body.password){
+       return res.status(400).json({message: 'Please fill out all fields'});
+       
+   }
+   
+    var user = new User();
+    user.username = req.body.username;
+    
+    user.setPassword(req.body.password);
+    
+    user.save(function(err){
+       if(err){return next(err);}
+        return res.json({token: user.generateJWT()});
+    });
+    
+});
+
+router.post('/login', function(req, res, next){
+    if(!req.body.username || !req.body.password){
+        return res.status(400).json({message : 'Please fill out all fields'});
+    }
+    
+    passport.authenticate('local', function(err, user, info){
+       if(err){return next(err);}
+        if(user){
+            return res.json({token: user.generateJWT()});
+        }else{
+            return res.status(401).json(info);
+        }
+    })(req, res, next);
+    
 });
 
 /* GET home page. */

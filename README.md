@@ -11,3 +11,6 @@ To run do :
 `npm start`
 
 It's configured to run on locahost:4000 (and not the default 3000) for personal convenience :D
+
+The User methods needs an environement variable as a secret key (for Json Web Token generation)
+Create a variable named PLANT_SECRET_KEY in you env.

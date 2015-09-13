@@ -7,7 +7,8 @@ var SensorSchema = new mongoose.Schema({
     maxValue: {type: Number, default: 1024},    
     description: String,
     measures : [{type: mongoose.Schema.Types.ObjectId, ref: 'Measure' }],
-    plants :  [{type: mongoose.Schema.Types.ObjectId, ref: 'Plant' }]
+    plants :  [{type: mongoose.Schema.Types.ObjectId, ref: 'Plant' }],
+    addedBy: String
 });
 
 mongoose.model('Sensor', SensorSchema);
