@@ -81,16 +81,19 @@ servicesModule.factory('sensorsService', ['$http', 'auth', function ($http, auth
     };
 
     o.commentMeasure = function (sensor, measure, comment) {
-        return $http.put('/sensors/' + sensor._id + '/measures/' + measure._id, {
-                headers: {
-                    Authorization: 'Bearer ' + auth.getToken()
-                },
+        var req = {
+            method: 'PUT',
+            url: '/sensors/' + sensor._id + '/measures/' + measure._id,
+            headers: {
+                'Authorization': 'Bearer ' + auth.getToken()
+            },
+            data: {
                 'comment': comment
-
-            })
-            .success(function (data) {
-                measure.comment = comment;
-            });
+            }
+        }
+        return $http(req).success(function (data) {
+            measure.comment = comment;
+        });
     };
 
     return o;
