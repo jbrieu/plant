@@ -85,16 +85,19 @@ app.factory('sensorsService', ['$http', 'auth', function ($http, auth) {
     };
 
     o.commentMeasure = function (sensor, measure, comment) {
-        return $http.put('/sensors/' + sensor._id + '/measures/' + measure._id, {
-                headers: {
-                    Authorization: 'Bearer ' + auth.getToken()
-                },
+        var req = {
+            method: 'PUT',
+            url: '/sensors/' + sensor._id + '/measures/' + measure._id,
+            headers: {
+                'Authorization': 'Bearer ' + auth.getToken()
+            },
+            data: {
                 'comment': comment
-
-            })
-            .success(function (data) {
-                measure.comment = comment;
-            });
+            }
+        }
+        return $http(req).success(function (data) {
+            measure.comment = comment;
+        });
     };
 
     return o;
@@ -153,7 +156,7 @@ app.factory('plantsService', ['$http', 'auth', function ($http, auth) {
                 }
 
                 if (!found) {
-                    var newArrayIds2 = sensor.plants.map(function(plant){
+                    var newArrayIds2 = sensor.plants.map(function (plant) {
                         return plant._id;
                     });
                     newArrayIds2.push(plant._id);
@@ -168,8 +171,8 @@ app.factory('plantsService', ['$http', 'auth', function ($http, auth) {
                         }
                     }
                     return $http(req2).success(function (data) {
-                            sensor.plants = newArrayIds2; // Should repopulate ?
-                        });
+                        sensor.plants = newArrayIds2; // Should repopulate ?
+                    });
                 }
 
             });
