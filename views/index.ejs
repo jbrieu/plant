@@ -11,20 +11,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.15/angular-ui-router.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.13.3/ui-bootstrap-tpls.min.js"></script>
 
-    <script src="/javascripts/angularApp.js"></script>
+    <script type="text/javascript" src="/javascripts/angularApp.js"></script>
+    <script type="text/javascript" src="/javascripts/services.js"></script>
 
 </head>
 
 <body ng-app="plant">
     <nav class="navbar navbar-default pull-right" ng-controller="NavCtrl">
-    <ul class="nav navbar-nav">
-      <li ng-show="isLoggedIn()"><a>{{ currentUser() }}</a></li>
-      <li ng-show="isLoggedIn()"><a href="" ng-click="logOut()">Log Out</a></li>
-      <li ng-hide="isLoggedIn()"><a href="/#/login">Log In</a></li>
-      <li ng-hide="isLoggedIn()"><a href="/#/register">Register</a></li>
-    </ul>
-  </nav>
-    
+        <ul class="nav navbar-nav">
+            <li ng-show="isLoggedIn()"><a>{{ currentUser() }}</a></li>
+            <li ng-show="isLoggedIn()"><a href="" ng-click="logOut()">Log Out</a></li>
+            <li ng-hide="isLoggedIn()"><a href="/#/login">Log In</a></li>
+            <li ng-hide="isLoggedIn()"><a href="/#/register">Register</a></li>
+        </ul>
+    </nav>
+
     <div class="container">
         <ui-view></ui-view>
     </div>
@@ -68,11 +69,11 @@
             </canvas>
         </div>
 
-<div ng-hide="isLoggedIn()">
-  <h3>You need to <a href="/#/login">Log In</a> or <a href="/#/register">Register</a> before you can add a plant or sensor.</h3>
-</div>
+        <div ng-hide="isLoggedIn()">
+            <h3>You need to <a href="/#/login">Log In</a> or <a href="/#/register">Register</a> before you can add a plant or sensor.</h3>
+        </div>
 
-        <form ng-submit="addPlant()" style="margin-top:30px;"  ng-show="isLoggedIn()">
+        <form ng-submit="addPlant()" style="margin-top:30px;" ng-show="isLoggedIn()">
             <h3>Add a new plant</h3>
             <div class="form-group">
                 <input type="text" ng-model="plantCreateName" class="form-control" placeholder="Plant Name" required="true"></input>
@@ -82,7 +83,7 @@
             <button type="submit" class="btn btn-primary">Post</button>
         </form>
 
-        <form ng-submit="addSensor()" style="margin-top:30px;"  ng-show="isLoggedIn()">
+        <form ng-submit="addSensor()" style="margin-top:30px;" ng-show="isLoggedIn()">
             <h3>Add a new sensor</h3>
             <div class="form-group">
                 <input type="text" placeholder="Sensor Name" class="form-control" ng-model="sensorName" required="true"></input>
@@ -95,7 +96,7 @@
             <button type="submit" class="btn btn-primary">Post</button>
         </form>
 
-        <form ng-submit="linkWithSensor()" style="margin-top:30px;"  ng-show="isLoggedIn()">
+        <form ng-submit="linkWithSensor()" style="margin-top:30px;" ng-show="isLoggedIn()">
             <h3>Link Plant With Sensor</h3>
             <div class="form-group">
                 <select ng-model="plantToLink" name="plantToLink" ng-options="p as p.name for p in plants"></select>
@@ -125,9 +126,9 @@
                     <td>{{ m.value }}</td>
                     <td>
                         <div ng-hide="isLoggedIn()">
-  <h3>You need to <a href="/#/login">Log In</a> or <a href="/#/register">Register</a> before you can comment.</h3>
-</div>
-                        <form class="form-inline" ng-submit="setCommentOnMeasure(m, comment)"  ng-show="isLoggedIn()">
+                            <h3>You need to <a href="/#/login">Log In</a> or <a href="/#/register">Register</a> before you can comment.</h3>
+                        </div>
+                        <form class="form-inline" ng-submit="setCommentOnMeasure(m, comment)" ng-show="isLoggedIn()">
                             <input type="text" class="form-control" ng-model="comment" required="false" ng-value="m.comment" size="35"></input>
                             <button type="submit" class="btn btn-primary">Post</button>
                         </form>
@@ -141,34 +142,27 @@
         </div>
     </script>
 
-   <script type="text/ng-template" id="/register.html">
-  <div class="page-header">
-    <h1>Flapper News</h1>
-  </div>
+    <script type="text/ng-template" id="/register.html">
+        <div class="page-header">
+            <h1>Flapper News</h1>
+        </div>
 
-  <div ng-show="error" class="alert alert-danger row">
-    <span>{{ error.message }}</span>
-  </div>
+        <div ng-show="error" class="alert alert-danger row">
+            <span>{{ error.message }}</span>
+        </div>
 
-  <form ng-submit="register()"
-    style="margin-top:30px;">
-    <h3>Register</h3>
+        <form ng-submit="register()" style="margin-top:30px;">
+            <h3>Register</h3>
 
-    <div class="form-group">
-      <input type="text"
-      class="form-control"
-      placeholder="Username"
-      ng-model="user.username"></input>
-    </div>
-    <div class="form-group">
-      <input type="password"
-      class="form-control"
-      placeholder="Password"
-      ng-model="user.password"></input>
-    </div>
-    <button type="submit" class="btn btn-primary">Register</button>
-  </form>
-</script>
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Username" ng-model="user.username"></input>
+            </div>
+            <div class="form-group">
+                <input type="password" class="form-control" placeholder="Password" ng-model="user.password"></input>
+            </div>
+            <button type="submit" class="btn btn-primary">Register</button>
+        </form>
+    </script>
 
     </script>
 
