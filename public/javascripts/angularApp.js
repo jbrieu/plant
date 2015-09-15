@@ -8,7 +8,7 @@ function ($stateProvider, $urlRouterProvider) {
         $stateProvider
             .state('home', {
                 url: '/home',
-                templateUrl: '/home.html',
+                templateUrl: 'partials/home.html',
                 controller: 'MainCtrl',
                 resolve: {
                     sensorsPromise: ['sensorsService', function (sensorsService) {
@@ -21,7 +21,7 @@ function ($stateProvider, $urlRouterProvider) {
             })
             .state('sensors', {
                 url: '/sensors/{id}',
-                templateUrl: '/sensors.html',
+                templateUrl: 'partials/sensors.html',
                 controller: 'SensorsCtrl',
                 resolve: {
                     sensor: ['$stateParams', 'sensorsService', function ($stateParams, sensorsService) {
@@ -31,7 +31,7 @@ function ($stateProvider, $urlRouterProvider) {
             })
             .state('login', {
                 url: '/login',
-                templateUrl: '/login.html',
+                templateUrl: 'partials/login.html',
                 controller: 'AuthCtrl',
                 onEnter: ['$state', 'auth', function ($state, auth) {
                     if (auth.isLoggedIn()) {
@@ -41,7 +41,7 @@ function ($stateProvider, $urlRouterProvider) {
             })
             .state('register', {
                 url: '/register',
-                templateUrl: '/register.html',
+                templateUrl: 'partials/register.html',
                 controller: 'AuthCtrl',
                 onEnter: ['$state', 'auth', function ($state, auth) {
                     if (auth.isLoggedIn()) {
