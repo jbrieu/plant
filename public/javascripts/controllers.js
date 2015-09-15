@@ -2,10 +2,11 @@ var controllersModule = angular.module('plant.controllers', ['plant.services']);
 
 app.controller('MainCtrl', [
     '$scope',
+    '$filter',
     'sensorsService',
     'plantsService',
     'auth',
-    function ($scope, sensorsService, plantsService, auth) {
+    function ($scope, $filter, sensorsService, plantsService, auth) {
         $scope.isLoggedIn = auth.isLoggedIn;
         $scope.sensors = sensorsService.sensors;
         $scope.plants = plantsService.plants;
@@ -75,7 +76,8 @@ app.controller('MainCtrl', [
             for (var sensorIndex in $scope.currentSensors) {
                 var labelsForThisSensor = new Array();
                 for (var measureIndex in $scope.currentSensors[sensorIndex].measures) {
-                    labelsForThisSensor.push(new Date($scope.currentSensors[sensorIndex].measures[measureIndex].date).toFormattedString());
+                    var labelDate = new Date($scope.currentSensors[sensorIndex].measures[measureIndex].date);
+                    labelsForThisSensor.push($filter('date')(labelDate, "dd/MM 'at' HH:mm"));
                 }
                 allLabels.push(labelsForThisSensor)
             }
@@ -96,8 +98,8 @@ app.controller('MainCtrl', [
         $scope.onClick = function (points, evt) {
             console.log(points, evt);
         };
-    }
-]);
+                }
+                ]);
 
 function arrayUnique(array) {
     var a = array.concat();
@@ -171,14 +173,3 @@ function ($scope, auth) {
         $scope.currentUser = auth.currentUser;
         $scope.logOut = auth.logOut;
 }]);
-
-String.prototype.padLeft = function (length, character) {
-    return new Array(length - this.length + 1).join(character || ' ') + this;
-};
-
-Date.prototype.toFormattedString = function () {
-    return [String(this.getMonth() + 1).padLeft(2, '0'),
-            String(this.getDate()).padLeft(2, '0'),
-            String(this.getFullYear()).substr(2, 2)].join("/") + " " + [String(this.getHours()).padLeft(2, '0'),
-            String(this.getMinutes()).padLeft(2, '0')].join(":");
-};
