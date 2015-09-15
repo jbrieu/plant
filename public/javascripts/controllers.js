@@ -73,14 +73,15 @@ app.controller('MainCtrl', [
 
             var allLabels = new Array();
 
-            for (var sensorIndex in $scope.currentSensors) {
+            angular.forEach($scope.currentSensors, function (sensor) {
                 var labelsForThisSensor = new Array();
-                for (var measureIndex in $scope.currentSensors[sensorIndex].measures) {
-                    var labelDate = new Date($scope.currentSensors[sensorIndex].measures[measureIndex].date);
-                    labelsForThisSensor.push($filter('date')(labelDate, "dd/MM 'at' HH:mm"));
-                }
+                angular.forEach(sensor.measures,
+                    function (measure, key) {
+                        var labelDate = new Date(measure.date);
+                        labelsForThisSensor.push($filter('date')(labelDate, "dd/MM 'at' HH:mm"));
+                    });
                 allLabels.push(labelsForThisSensor)
-            }
+            });
 
             var merged = [].concat.apply([], allLabels);
 
@@ -117,10 +118,11 @@ function arrayUnique(array) {
 
 app.controller('SensorsCtrl', [
     '$scope',
+    '$filter',
     'sensorsService',
     'sensor',
     'auth',
-    function ($scope, sensorsService, sensor, auth) {
+    function ($scope, $filter, sensorsService, sensor, auth) {
         $scope.isLoggedIn = auth.isLoggedIn;
         $scope.sensor = sensor;
 
@@ -129,7 +131,8 @@ app.controller('SensorsCtrl', [
         };
 
         $scope.labels = sensor.measures.map(function (measure) {
-            return new Date(measure.date).toFormattedString();
+            var date = new Date(measure.date);
+            return $filter('date')(date, "dd/MM 'at' HH:mm");
         });
         $scope.series = [sensor.sensorName];
         $scope.data = [sensor.measures.map(function (measure) {
